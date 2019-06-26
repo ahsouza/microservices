@@ -1,10 +1,9 @@
 #!/bin/bash
 # Usando uma lista com botões de rádio com o Zenity
 # REMOÇÃO DE CONTAINERS E IMAGENS
-echo "Olá ${LOGNAME} :)"
-echo "Vamos limpar algumas coisas por aqui !?"
 # export CONTAINERS=$(docker ps -a --format "table {{.ID}}\t{{.Image}}\t{{.Names}}")
-
+zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME} :)"
+sleep 1s
 # Criando variavel global e atribuindo informacoes docker containers e imagens
 export CONTAINER=$(docker ps -a --format "{{.Names}}")
     # Caso tenha algum container
@@ -22,16 +21,26 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
                 echo "Deletando container: x - ${DELETE....}"
                 docker rm -f "${DELETE}"
                 docker rmi -f "${DELETE}"
-                zenity --height="120" --width="300" --info --text "\nO container <b>${CONTAINER}</b> \n\foi deletado!"
+                sleep 1s
+                zenity --height="120" --width="300" --notification --text "\nO container <b>${CONTAINER}</b> \n\foi deletado!"
                 exit 0
 
             else
                 # Caso a exclusão foi para apagar tudo; então
                 if [[ "${DELETE}" == "Apagar-Tudo" ]]; then
-                    echo "Deletando todos containers..."
-                    docker rm -f $(docker ps -aq)
-                    docker rmi -f $(docker images -aq)
-                    zenity --height="120" --width="300" --info --text "Você apagou todos os containers!"
+                    # Pergunta se realmente deseja apagar todos containers
+                    zenity --question --width="420" --text "Tem certeza que deseja apagar todos os containers?"
+                    if [[ $? = 0 ]]; then
+                        
+                        echo "Deletando todos containers..."
+                        docker rm -f $(docker ps -aq)
+                        docker rmi -f $(docker images -aq)
+                        sleep 1s
+                        zenity --height="120" --width="300" --notification --text "Todos os containers foram excluidos!"
+
+                    else
+                        exit 0
+                    fi
                 else
                 # Caso nenhum. Saia!    
                     exit 0
@@ -63,6 +72,8 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 
             # Caso a imagem foi realmente selecionada
             if [[ "$IMAGEM_SELECIONADO" ]]; then
+                sleep 1s
+                zenity --height="120" --width="300" --notification --text "\Construindo <b>${IMAGEM_SELECIONADO}</b>..."
 
                 echo "Building imagem...";
                 echo "Building ${IMAGEM_SELECIONADO}...";
@@ -72,7 +83,8 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
                 docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
                 #docker exec -it crecies bash server.sh
                 docker exec -it crecies bash server.sh
-                zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\instalada com sucesso!"
+                sleep 1s
+                zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
             else
                 # Caso nenhum. Saia!
                 exit 0
@@ -88,7 +100,8 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 
             # Caso método seja equivalente a Microserviços
             if [[ "$SERVICE_SELECIONADO" ]]; then
-
+                sleep 1s
+                zenity --height="120" --width="300" --notification --text "\Habilitando <b>${SERVICE_SELECIONADO}</b>..."
                 echo "Activating services...";
                 echo "Activating ${SERVICE_SELECIONADO}...";
                 docker-compose up
@@ -100,4 +113,4 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
                 exit 0
             fi    
         fi
-fi
+    fi
