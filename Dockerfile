@@ -2,7 +2,7 @@ FROM php:7.3.6-fpm-alpine3.9 as build-stage
 
 WORKDIR /var/www
 
-RUN apk add bash && \
+RUN apk add bash zenity && \
     apk add composer
 
 RUN rm -rf /var/www/html
