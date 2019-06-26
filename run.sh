@@ -4,16 +4,19 @@
 echo "Olá ${LOGNAME} :)"
 echo "Vamos limpar algumas coisas por aqui !?"
 # export CONTAINERS=$(docker ps -a --format "table {{.ID}}\t{{.Image}}\t{{.Names}}")
-export CONTAINER=$(docker ps -a --format "{{.Names}}")
-    
-    if [[ "$CONTAINER" ]]; then
 
+# Criando variavel global e atribuindo informacoes docker containers e imagens
+export CONTAINER=$(docker ps -a --format "{{.Names}}")
+    # Caso tenha algum container
+    if [[ "$CONTAINER" ]]; then
+        # Crie uma lista de opções para dados serem excluídos
         DELETE=$(zenity --height="360" --width="720" --list --text "Iniciando projeto" \
             --radiolist  \
             --column "" \
             --column "Excluir" \
             FALSE $CONTAINER FALSE Apagar-Tudo);
 
+            # Caso a exclusão foi para containers; então
             if [[ "${DELETE}" == "${CONTAINER}" ]]; then
 
                 echo "Deletando container: x - ${DELETE....}"
@@ -23,12 +26,14 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
                 exit 0
 
             else
+                # Caso a exclusão foi para apagar tudo; então
                 if [[ "${DELETE}" == "Apagar-Tudo" ]]; then
                     echo "Deletando todos containers..."
                     docker rm -f $(docker ps -aq)
                     docker rmi -f $(docker images -aq)
                     zenity --height="120" --width="300" --info --text "Você apagou todos os containers!"
                 else
+                # Caso nenhum. Saia!    
                     exit 0
                 fi    
             fi
@@ -36,7 +41,7 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
 # REMOÇÃO DE CONTAINERS E IMAGENS    
 
 
-# SELEÇÃO DE CONTAINERS OU IMAGENS
+# CRIANDO PROJETO
 echo "Iniciando projeto....}"
 ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando projeto" \
     --radiolist  \
@@ -45,8 +50,9 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
     TRUE Imagens FALSE Microservicos);
 
 
-
+    # Caso algum método ágil para desenvolver foi selecionado
     if [[ "$ITEM_SELECIONADO" ]]; then
+        # Caso método seja equivalente a Imagens
         if [[ "${ITEM_SELECIONADO}" == "Imagens" ]]; then
 
             IMAGEM_SELECIONADO=$(zenity --height="300" --width="600" --list --text "Escolhendo imagem" \
@@ -55,6 +61,7 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
                 --column "Imagens" \
                 TRUE crecies/laravel FALSE crecies/adonis FALSE crecies/vue FALSE crecies/ubuntu-server FALSE crecies/parrot FALSE crecies/windows-server);
 
+            # Caso a imagem foi realmente selecionada
             if [[ "$IMAGEM_SELECIONADO" ]]; then
 
                 echo "Building imagem...";
@@ -67,9 +74,9 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
                 docker exec -it crecies bash server.sh
                 zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\instalada com sucesso!"
             else
+                # Caso nenhum. Saia!
                 exit 0
             fi
-
 
         else
 
@@ -79,7 +86,7 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
             --column "Serviços" \
             FALSE apache FALSE redis FALSE nginx FALSE mysql FALSE oracle FALSE mongo FALSE wordpress FALSE aws);
 
-
+            # Caso método seja equivalente a Microserviços
             if [[ "$SERVICE_SELECIONADO" ]]; then
 
                 echo "Activating services...";
@@ -87,10 +94,10 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
                 docker-compose up
                 docker exec -it app bash
                 ./server.sh
-                
+
             else    
-    
+                # Caso nenhum. Saia!
                 exit 0
             fi    
         fi
-    fi
+fi
