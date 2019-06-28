@@ -8,7 +8,6 @@ zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME} :)"
 export PATH = "${PWD}/app"
 zenity --height="120" --width="600" --notification --text "Olá ${PATH} :)"
 
-
 # REMOÇÃO DE CONTAINERS E IMAGENS
 sleep 1s
 # Criando variavel global e atribuindo informacoes sobre docker na máquina local
@@ -78,41 +77,46 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 			# BAIXANDO SEU PROJETO
 			sleep 1s
 		    zenity --question --width="420" --text "\nDeseja enviar o código fonte do projeto?"
-		    if [[ $? = 0 ]]; then				
+		    if [[ $? = 0 ]]; then		
+
 			    sleep 1s
-		  
 		        zenity --height="120" --width="300" --file-selection
 		    else
-			    exit 0
-		    fi
-		    # BAIXANDO SEU PROJETO }
 
 			IMAGEM_SELECIONADO=$(zenity --height="300" --width="600" --list --text "Escolhendo imagem" \
 			    --radiolist \
 			    --column "Selecionar" \
 			    --column "Imagens" \
-			    TRUE crecies/laravel FALSE crecies/adonis FALSE crecies/vue FALSE crecies/ubuntu-server FALSE crecies/parrot FALSE crecies/windows-server);
+			    TRUE crecies/laravel FALSE crecies/adonis FALSE crecies/vue FALSE crecies/alfresco FALSE crecies/ubuntu-server FALSE crecies/parrot FALSE crecies/windows-server);
 
 			# Caso a imagem foi realmente selecionada
-			if [[ "$IMAGEM_SELECIONADO" ]]; then
-				sleep 1s
-				zenity --height="120" --width="360" --notification --text "\Construindo ${IMAGEM_SELECIONADO}..."
+				if [[ "$IMAGEM_SELECIONADO" ]]; then
 
-				echo "Building imagem...\n" "info";
-				echo "Building ${IMAGEM_SELECIONADO}..." "info";
+					if [[ "$IMAGEM_SELECIONADO" == "crecies/alfresco" ]];then
+						docker-compose -f alfresco.docker-compose.yaml up
+					else
 
-				docker build -t ${IMAGEM_SELECIONADO} .
-				#docker run -d --name crecies -v $(pwd):/var/www -p 8000:8000 crecies/laravel-5.8
-				docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
-				#docker exec -it crecies bash server.sh
-				docker exec -it crecies bash server.sh
-				sleep 1s
-				zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
-			else
-				# Caso nenhum. Saia!
-				exit 0
+						sleep 1s
+						zenity --height="120" --width="360" --notification --text "\Construindo ${IMAGEM_SELECIONADO}..."
+
+						echo "Building imagem...\n" "info";
+						echo "Building ${IMAGEM_SELECIONADO}..." "info";
+
+						docker build -t ${IMAGEM_SELECIONADO} .
+						#docker run -d --name crecies -v $(pwd):/var/www -p 8000:8000 crecies/laravel-5.8
+						docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
+						#docker exec -it crecies bash server.sh
+						docker exec -it crecies bash server.sh
+						sleep 1s
+						zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
+
+					fi
+
+				else
+					# Caso nenhum. Saia!
+					exit 0
+				fi
 			fi
-
 		else
 
 			SERVICE_SELECIONADO=$(zenity --height="300" --width="600" --list --text "Ativando serviços" \
