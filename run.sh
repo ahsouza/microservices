@@ -4,9 +4,21 @@
 #----------#
 # Welcome  #
 #----------#
-zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME} :)"
+dir=".extras/"
+
+if [ -d "$dir" ];then
+    zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME}"
+    sleep 1s
+else
+    zenity --height="120" --width="300" --notification --text "Baixando programas..."
+    mkdir .extras/
+    cd .extras/
+    curl -o basic.zip https://www.crecies.gov.br/Dowloads_Arquivos/basic-10.2.0.5.0-linux-x64.zip
+    curl -o sdk.zip https://www.crecies.gov.br/Dowloads_Arquivos/sdk-10.2.0.5.0-linux-x64.zip
+    cd ..
+fi
+#zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME} :)"
 export PATH = "${PWD}/app"
-zenity --height="120" --width="600" --notification --text "Olá ${PATH} :)"
 
 # REMOÇÃO DE CONTAINERS E IMAGENS
 sleep 1s
