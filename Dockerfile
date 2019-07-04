@@ -15,9 +15,7 @@ RUN apk add php7-dev gcc musl-dev musl unzip libnsl libarchive-tools libaio bash
 	ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
 	ln -s /usr/local/instantclient/lib* /usr/lib && \
 	docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient && \
-	docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/local/instantclient && \
 	docker-php-ext-install oci8 && \
-	docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
 	docker-php-ext-enable oci8 && \
 	rm -rf /var/lib/apk/lists/*
 
