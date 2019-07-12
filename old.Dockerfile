@@ -4,11 +4,6 @@ WORKDIR /usr/local
 COPY /.extras/*.zip /usr/local/
 
 RUN apk update
-RUN apk --no-cache add ca-certificates wget && \
-	wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk && \
-	apk add glibc-2.29-r0.apk
-
 RUN apk add php7-dev php7-pear gcc musl-dev musl unzip libnsl libarchive-tools libaio bash tar unzip g++ && \
 	apk add composer && \
 	apk add php7-gd && \
@@ -24,10 +19,6 @@ RUN apk add php7-dev php7-pear gcc musl-dev musl unzip libnsl libarchive-tools l
 	docker-php-ext-enable oci8 && \
 	rm -rf /var/lib/apk/lists/*
 
-RUN pecl config-set php_ini  /usr/local/etc/php/php.ini && \
-	pecl install -f memcached \ #Or any Additional packages echo extension=memcached.so >> /usr/local/etc/php/conf.d/docker-php-ext-memcached.ini && \
-	rm -rf /tmp/pear  && \
-	pecl install oci8
 
 WORKDIR /var/www
 

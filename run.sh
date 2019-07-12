@@ -40,6 +40,7 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
 			if [[ "${DELETE}" == "${CONTAINER}" ]]; then
 				print_style "Excluindo ${CONTAINER}...\n" "info";
 				
+				docker stop "${DELETE}"
 				docker rm -f "${DELETE}"
 				docker rmi -f "${DELETE}"
 				sleep 1s
@@ -54,6 +55,7 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
 					if [[ $? = 0 ]]; then
 						
 						print_style "Deletando todos containers...\n" "info"
+						docker stop $(docker ps -aq)
 						docker rm -f $(docker ps -aq)
 						docker rmi -f $(docker images -aq)
 						sleep 1s
