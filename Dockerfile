@@ -1,5 +1,9 @@
 FROM php:7.3.6-fpm-alpine3.9 as build-stage
 #WORKDIR /var/www
+COPY ./instantclient-basic-linux.x64-18.5.zip /usr/local
+COPY ./instantclient-sdk-linux.x64-18.5.zip /usr/local
+
+
 WORKDIR /usr/local
 COPY /.extras/*.zip /usr/local/
 
@@ -14,9 +18,9 @@ RUN apk add php7-dev php7-pear gcc musl-dev musl unzip libnsl libarchive-tools l
 	apk add php7-gd && \
 	apk add php7-curl ca-certificates && \
 	apk upgrade && \
-	unzip basic.zip && \
-	unzip sdk.zip && \
-	ln -s /usr/local/instantclient_10_2 /usr/local/instantclient && \
+	unzip instantclient-basic-linux.x64-18.5.zip && \
+	unzip instantclient-sdk-linux.x64-18.5.zip && \
+	ln -s /usr/local/instantclient_18_5 /usr/local/instantclient && \
 	ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
 	ln -s /usr/local/instantclient/lib* /usr/lib && \
 	docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient && \
