@@ -29,49 +29,49 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
 	#  DELETE  #
 	#----------#
 	if [[ "$CONTAINER" ]]; then
-		zenity --question --width="420" --text "Deseja excluir algum container?"
-		if [[ $? = 0 ]]; then
-		
-			# Criando uma lista de opções para dados serem excluídos
-			DELETE=$(zenity --height="360" --width="720" --list --text "Iniciando projeto" \
-			    --radiolist  \
-			    --column "" \
-			    --column "Excluir" \
-			    FALSE $CONTAINER FALSE Apagar-Tudo);
+		# Criando uma lista de opções para dados serem excluídos
+		DELETE=$(zenity --height="360" --width="720" --list --text "Iniciando projeto" \
+		    --radiolist  \
+		    --column "" \
+		    --column "Excluir" \
+		    FALSE $CONTAINER FALSE Apagar-Tudo);
 
-			    # Caso a exclusão foi para containers; então
-				if [[ "${DELETE}" == "${CONTAINER}" ]]; then
-					print_style "Excluindo ${CONTAINER}...\n" "info";
-					
-					docker stop "${DELETE}"
-					docker rm -f "${DELETE}"
-					docker rmi -f "${DELETE}"
-					sleep 1s
-					zenity --height="120" --width="360" --notification --text "\n${CONTAINER} foi apagado!"
-					exit 0
-				else
-					# Caso a exclusão foi para apagar tudo; então
-					if [[ "${DELETE}" == "Apagar-Tudo" ]]; then
-					    # Pergunta se realmente deseja apagar todos containers
-						zenity --question --width="420" --text "Tem certeza que deseja apagar todos os containers?"
-						if [[ $? = 0 ]]; then
-								
-							print_style "Deletando todos containers...\n" "info"
-							docker stop $(docker ps -aq)
-							docker rm -f $(docker ps -aq)
-							docker rmi -f $(docker images -aq)
-							sleep 1s
-							zenity --height="120" --width="300" --notification --text "Todos os containers foram excluidos!"
+		    # Caso a exclusão foi para containers; então
+			if [[ "${DELETE}" == "${CONTAINER}" ]]; then
+				print_style "Excluindo ${CONTAINER}...\n" "info";
+				
+				docker stop "${DELETE}"
+				docker rm -f "${DELETE}"
+				docker rmi -f "${DELETE}"
+				sleep 1s
+				zenity --height="120" --width="360" --notification --text "\n${CONTAINER} foi apagado!"
+				exit 0
 
-						else
-							exit 0
-						fi
+			else
+				# Caso a exclusão foi para apagar tudo; então
+				if [[ "${DELETE}" == "Apagar-Tudo" ]]; then
+					# Pergunta se realmente deseja apagar todos containers
+					zenity --question --width="420" --text "Tem certeza que deseja apagar todos os containers?"
+					if [[ $? = 0 ]]; then
+						
+						print_style "Deletando todos containers...\n" "info"
+						docker stop $(docker ps -aq)
+						docker rm -f $(docker ps -aq)
+						docker rmi -f $(docker images -aq)
+						sleep 1s
+						zenity --height="120" --width="300" --notification --text "Todos os containers foram excluidos!"
+
 					else
-					    # Caso nenhum. Saia!	
 						exit 0
-					fi	
-				fi
-		else
+					fi
+				else
+				# Caso nenhum. Saia!	
+					exit 0
+				fi	
+			fi
+	fi
+# REMOÇÃO DE CONTAINERS E IMAGENS }	
+
 # DOCKTERIZANDO AMBIENTE DA APLICAÇÃO
 #----------#
 # Ambiente #
@@ -90,12 +90,12 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 
 			# BAIXANDO SEU PROJETO
 			sleep 1s
-		    # zenity --question --width="420" --text "\nDeseja enviar o código fonte do projeto?"
-		    # if [[ $? = 0 ]]; then		
+		    zenity --question --width="420" --text "\nDeseja enviar o código fonte do projeto?"
+		    if [[ $? = 0 ]]; then		
 
-			   #  sleep 1s
-		    #     zenity --height="120" --width="300" --file-selection
-		    # else
+			    sleep 1s
+		        zenity --height="120" --width="300" --file-selection
+		    else
 
 			IMAGEM_SELECIONADO=$(zenity --height="300" --width="600" --list --text "Escolhendo imagem" \
 			    --radiolist \
@@ -155,23 +155,3 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 			fi	
 		fi
 	fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		fi			
-	fi
-# REMOÇÃO DE CONTAINERS E IMAGENS }	
-
