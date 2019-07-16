@@ -1,0 +1,103 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-01-01 13:00:00`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+
+type Query @protect(guards: ["api"]) {
+
+    """Lista de Pessoas"""
+    pessoas: [Pessoa!]! @all(model: "App\\Models\\Pessoa")
+
+    """Pesquisar por Pessoa"""
+    pessoa (codpessoa: ID! @eq): Pessoa @find(model: "App\\Models\\Pessoa")
+
+    """Lista de Usuarios"""
+    usuarios: [User!]! @all(model: "App\\Models\\User")
+
+    """Pesquisar por Usuário"""
+    usuario(codusuaio: ID! @eq): User @find(model: "App\\Models\\User")
+}
+
+type Mutation @protect(guards: ["api"]) {
+    createUser(
+        nome: String @rules(apply: ["required"])
+        email: String @rules(apply: ["required", "email", "unique:users,email"])
+    ): User @create(model: "App\\Models\\User")
+    #    updateUser(
+    #        codusuaio: ID @rules(apply: ["required"])
+    #        nome: String
+    #        email: String @rules(apply: ["email"])
+    #    ): User @update(model: "App\\Models\\User")
+}
+
+
+"""Tabela de Pessoa"""
+type Pessoa {
+    """O id do Pessoa."""
+    codpessoa: Int!
+
+    """Nome do Pessoa."""
+    nome: String!
+
+    """E-mail do Pessoa."""
+    email: String!
+
+    """Dados Pessoa Fisica"""
+    pf: Pf @hasOne(relation: "pf")
+
+    """Dados Pessoa Juridica"""
+    pj: Pj @hasOne(relation: "pj")
+
+    """Dados da Inscrição no CRECI"""
+    creci: Corretor @hasOne(relation: "corretor")
+
+    """Usuário"""
+    usuario: User @hasOne(relation: "usuario")
+}
+
+
+"""Tabela de Pessoas com numero de CRECI"""
+type Corretor {
+    """O id do Corretor"""
+    codcorretor: ID!
+
+    """Data da Criação do Corretor"""
+    created_at: DateTime!
+
+    """Data da Alteração dos dados deste Corretor"""
+    updated_at: DateTime!
+}
+
+
+"""Tabela de Usuários do Sistema"""
+type User {
+    """O id do usuário"""
+    codusuario: ID!
+
+    """Nome do usuário"""
+    nome: String!
+
+    """E-mail do usuário"""
+    email: String!
+
+    """Data da Criação do usuário"""
+    created_at: DateTime!
+
+    """Data da Alteração dos dados deste usuário"""
+    updated_at: DateTime!
+}
+
+
+"""Tabela de Pessoa Fisica"""
+type Pf {
+    """Número do CPF"""
+    cpf: String!
+}
+
+"""Tabela de Pessoa Juridica"""
+type Pj {
+    """Número do CNPJ"""
+    cnpj: String!
+}

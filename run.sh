@@ -60,7 +60,6 @@ export CONTAINER=$(docker ps -a --format "{{.Names}}")
 						docker rmi -f $(docker images -aq)
 						sleep 1s
 						zenity --height="120" --width="300" --notification --text "Todos os containers foram excluidos!"
-
 					else
 						exit 0
 					fi
@@ -82,17 +81,14 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
     --column "Selecionar" \
     --column "Métodos" \
     TRUE Imagens FALSE Microservicos);
-
     # Caso algum método ágil para desenvolver foi selecionado
 	if [[ "$ITEM_SELECIONADO" ]]; then
 		# Caso método seja equivalente a Imagens
 		if [[ "${ITEM_SELECIONADO}" == "Imagens" ]]; then
-
 			# BAIXANDO SEU PROJETO
 			sleep 1s
 		    zenity --question --width="420" --text "\nDeseja enviar o código fonte do projeto?"
-		    if [[ $? = 0 ]]; then		
-
+		    if [[ $? = 0 ]]; then
 			    sleep 1s
 		        zenity --height="120" --width="300" --file-selection
 		    else
@@ -101,21 +97,17 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 			    --radiolist \
 			    --column "Selecionar" \
 			    --column "Imagens" \
-			    TRUE crecies/laravel FALSE crecies/adonis FALSE crecies/vue FALSE crecies/alfresco FALSE crecies/ubuntu-server FALSE crecies/parrot FALSE crecies/windows-server);
-
-			# Caso a imagem foi realmente selecionada
+			    TRUE crecies/area-restrita FALSE crecies/infosec FALSE crecies/wordpress FALSE crecies/alfresco FALSE crecies/server);
+				# Caso a imagem foi realmente selecionada
 				if [[ "$IMAGEM_SELECIONADO" ]]; then
 
 					if [[ "$IMAGEM_SELECIONADO" == "crecies/alfresco" ]];then
 						docker-compose -f alfresco.docker-compose.yaml up
 					else
-
 						sleep 1s
 						zenity --height="120" --width="360" --notification --text "\Construindo ${IMAGEM_SELECIONADO}..."
-
 						echo "Building imagem...\n" "info";
 						echo "Building ${IMAGEM_SELECIONADO}..." "info";
-
 						docker build -t ${IMAGEM_SELECIONADO} .
 						#docker run -d --name crecies -v $(pwd):/var/www -p 8000:8000 crecies/laravel-5.8
 						docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
@@ -123,7 +115,6 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 						docker exec -it crecies bash server.sh
 						sleep 1s
 						zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
-
 					fi
 
 				else
@@ -132,7 +123,6 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 				fi
 			fi
 		else
-
 			SERVICE_SELECIONADO=$(zenity --height="300" --width="600" --list --text "Ativando serviços" \
 			--checklist \
 			--column "Selecionar" \
@@ -148,7 +138,6 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 				docker-compose up
 				docker exec -it app bash
 				./server.sh
-
 			else	
 				# Caso nenhum. Saia!
 				exit 0
