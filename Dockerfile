@@ -52,6 +52,45 @@ RUN apk add --update --no-cache \
     php7-xmlwriter \
     curl
 
+RUN apk add nodejs \
+	gconf-service \
+	libasound2 \
+	libatk1.0-0 \
+	libc6 \
+	libcairo2 \
+	libcups2 \
+	libdbus-1-3 \
+	libexpat1 \
+	libfontconfig1 \
+	libgcc1 \
+	libgconf-2-4 \
+	libgdk-pixbuf2.0-0 \
+	libglib2.0-0 \
+	libgtk-3-0 \
+	libnspr4 \
+	libpango-1.0-0 \
+	libpangocairo-1.0-0 \
+	libstdc++6 \
+	libx11-6 \
+	libx11-xcb1 \
+	libxcb1 \
+	libxcomposite1 \
+	libxcursor1 \
+	libxdamage1 \
+	libxext6 \
+	libxfixes3 \
+	libxi6 \
+	libxrandr2 \
+	libxrender1 \
+	libxss1 \
+	libxtst6 \
+	fonts-liberation \
+	libappindicator1 \
+	libnss3 \
+	lsb-release \
+	xdg-utils 
+
+
 RUN apk add make gcc musl-dev musl unzip libnsl libarchive-tools libaio icu-dev zlib-dev bash tar unzip g++ && \
  apk add composer && \
  apk add ca-certificates && \
@@ -59,18 +98,20 @@ RUN apk add make gcc musl-dev musl unzip libnsl libarchive-tools libaio icu-dev 
  unzip basic.zip -d /usr/local/ && \
  unzip sdk.zip -d /usr/local/ && \
 
- ln -s /usr/local/instantclient_10_2 /usr/local/instantclient && \
- ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
- ln -s /usr/local/instantclient/lib* /usr/lib && \
+ ln -s /usr/local/instantclient_18_5 /usr/local/instantclient && \
+ export LD_LIBRARY_PATH=/usr/local/instantclient && \
+# ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
+# ln -s /usr/local/instantclient/lib* /usr/lib && \
 
- docker-php-ext-configure intl && \
+ #docker-php-ext-configure intl && \
  docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient && \
  docker-php-ext-install oci8 && \
- docker-php-ext-install intl && \
+ #docker-php-ext-install intl && \
  echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
  echo "extension=oci8.so" >> /usr/local/etc/php/php.ini && \
- echo "extension=sodium.so" >> /usr/local/etc/php/php.ini && \
- echo "extension=intl.so" >> /usr/local/etc/php/php.ini
+ rm -rf /usr/local/*.zip
+ #echo "extension=sodium.so" >> /usr/local/etc/php/php.ini && \
+ #echo "extension=intl.so" >> /usr/local/etc/php/php.ini && \
  # docker-php-ext-install oci8 && \
  # docker-php-ext-enable oci8 && \
  # rm -rf /var/lib/apk/lists/*
@@ -85,7 +126,7 @@ RUN rm -rf /var/www/html
 # RUN rm -rf /etc/nginx/conf.d/default.conf
 # COPY ./nginx.conf /etc/nginx/conf.d
 
-#COPY .docker/app/ /var/www
+COPY .docker/app/ /var/www
 #COPY server.sh /var/www
 RUN ln -s public html
 

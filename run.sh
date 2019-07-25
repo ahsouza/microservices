@@ -7,16 +7,34 @@
 dir=".extras/"
 
 if [ -d "$dir" ];then
-    zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME}"
-    sleep 1s
-else
-    zenity --height="120" --width="300" --notification --text "Baixando programas..."
-    mkdir .extras/
-    cd .extras/
-    curl -o basic.zip https://www.crecies.gov.br/Dowloads_Arquivos/basic-10.2.0.5.0-linux-x64.zip
-    curl -o sdk.zip https://www.crecies.gov.br/Dowloads_Arquivos/sdk-10.2.0.5.0-linux-x64.zip
-    cd ..
+	zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME}"
+	sleep 1s
+	rm -rf .extras/
+
+	OCI8=$(zenity --height="360" --width="720" --list --text "Iniciando projeto" \
+		--radiolist  \
+		--column "" \
+		--column "Excluir" \
+		FALSE OCI8_12 FALSE OCI8_18);
+
+		if [[ "$OCI8" == "OCI8_12" ]]; then	
+				    
+		    zenity --height="120" --width="300" --notification --text "Baixando programas..."
+		    mkdir .extras/
+		    cd .extras/
+		    curl -o basic.zip https://www.crecies.gov.br/Dowloads_Arquivos/basic-10.2.0.5.0-linux-x64.zip
+		    curl -o sdk.zip https://www.crecies.gov.br/Dowloads_Arquivos/sdk-10.2.0.5.0-linux-x64.zip
+		    cd ..
+				
+		else
+			mkdir .extras/
+			cp instantclient-basic-linux.x64-18.5.zip .extras/basic.zip
+			cp instantclient-sdk-linux.x64-18.5.zip .extras/sdk.zip
+		fi
 fi
+
+
+
 #zenity --height="120" --width="300" --notification --text "Olá ${LOGNAME} :)"
 export PATH = "${PWD}/app"
 
@@ -111,8 +129,8 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 						docker build -t ${IMAGEM_SELECIONADO} .
 						#docker run -d --name crecies -v $(pwd):/var/www -p 8000:8000 crecies/laravel-5.8
 						docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
-						#docker exec -it crecies bash server.sh
-						docker exec -it crecies bash
+						docker exec -it crecies bash server.sh
+						# docker exec -it crecies bash
 						sleep 1s
 						zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
 					fi
@@ -120,6 +138,7 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 				else
 					# Caso nenhum. Saia!
 					exit 0
+					rm -rf .extras/
 				fi
 			fi
 		else
