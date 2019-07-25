@@ -112,7 +112,7 @@ ITEM_SELECIONADO=$(zenity --height="360" --width="720" --list --text "Iniciando 
 						#docker run -d --name crecies -v $(pwd):/var/www -p 8000:8000 crecies/laravel-5.8
 						docker run -d --name crecies -p 8000:8000 ${IMAGEM_SELECIONADO}
 						#docker exec -it crecies bash server.sh
-						docker exec -it crecies bash server.sh
+						docker exec -it crecies bash
 						sleep 1s
 						zenity --height="120" --width="300" --info --text "\nImagem <b>${IMAGEM_SELECIONADO}</b> \n\construida com sucesso!"
 					fi

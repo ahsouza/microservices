@@ -8,29 +8,76 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
+RUN apk update && apk upgrade
+RUN apk --no-cache add ca-certificates wget && \
+ wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+ wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk && \
+ apk add glibc-2.29-r0.apk
 
-RUN apk update
-RUN apk add openssl php7-dev php7-pear gcc musl-dev musl unzip nodejs npm libnsl libarchive-tools libaio libtirpc-dev bash tar unzip g++ && \
-	apk add composer && \
-	apk add php7-gd && \
-	apk add php7-curl ca-certificates && \
-	apk upgrade && \
-	unzip basic.zip && \
-	unzip sdk.zip && \
-	ln -s /usr/local/instantclient_10_2 /usr/local/instantclient && \
-	ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
-	ln -s /usr/local/instantclient/lib* /usr/local && \
-	echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
-  	echo "extension=oci8.so" >> /usr/local/etc/php/php.ini && \
-	docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient && \
-	docker-php-ext-install oci8 && \
-	docker-php-ext-enable oci8 && \
-	rm -rf /var/local/apk/lists/*
+RUN apk add --update --no-cache \
+	nano \
+	coreutils \
+	php7-cli \
+	php7-json \
+	php7-openssl \
+	php7-iconv \
+	php7-ctype \
+	php7-soap \
+	php7-dom \
+	php7-bcmath \
+	php7-pgsql \
+	php7-curl \
+	php7-gd \
+	php7-pear \
+	php7-redis \
+	php7-dev \
+    php7-apcu \
+    php7-imagick \
+    php7-intl \
+    php7-mcrypt \
+    php7-fileinfo \
+    php7-mbstring \
+    php7-opcache \
+    php7-pdo \
+    php7-pdo_mysql \
+    php7-mysqli \
+    php7-xml \
+    php7-zlib \
+    php7-phar \
+    php7-tokenizer \
+    php7-session \
+    php7-simplexml \
+    php7-xdebug \
+    php7-zip \
+    php7-xmlwriter \
+    curl
 
-ENV ORACLE_BASE /usr/local/instantclient_10_2
-ENV LD_LIBRARY_PATH /usr/local/instantclient_10_2
-ENV TNS_ADMIN /usr/local/instantclient_10_2
-ENV ORACLE_HOME /usr/local/instantclient_10_2
+RUN apk add make gcc musl-dev musl unzip libnsl libarchive-tools libaio icu-dev zlib-dev bash tar unzip g++ && \
+ apk add composer && \
+ apk add ca-certificates && \
+ apk upgrade && \
+ unzip basic.zip -d /usr/local/ && \
+ unzip sdk.zip -d /usr/local/ && \
+
+ ln -s /usr/local/instantclient_10_2 /usr/local/instantclient && \
+ ln -s /usr/local/instantclient/libclntsh.so.* /usr/local/instantclient/libclntsh.so && \
+ ln -s /usr/local/instantclient/lib* /usr/lib && \
+
+ docker-php-ext-configure intl && \
+ docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient && \
+ docker-php-ext-install oci8 && \
+ docker-php-ext-install intl && \
+ echo 'instantclient,/usr/local/instantclient' | pecl install oci8 && \
+ echo "extension=oci8.so" >> /usr/local/etc/php/php.ini && \
+ echo "extension=sodium.so" >> /usr/local/etc/php/php.ini && \
+ echo "extension=intl.so" >> /usr/local/etc/php/php.ini
+ # docker-php-ext-install oci8 && \
+ # docker-php-ext-enable oci8 && \
+ # rm -rf /var/lib/apk/lists/*
+# RUN pecl config-set php_ini  /usr/local/etc/php/php.ini && \
+#  pecl install -f memcached \ #Or any Additional packages echo extension=memcached.so >> /usr/local/etc/php/conf.d/docker-php-ext-memcached.ini && \
+#  rm -rf /tmp/pear  && \
+#  pecl install oci8
 
 WORKDIR /var/www
 
@@ -38,8 +85,8 @@ RUN rm -rf /var/www/html
 # RUN rm -rf /etc/nginx/conf.d/default.conf
 # COPY ./nginx.conf /etc/nginx/conf.d
 
-COPY .docker/app/ /var/www
-COPY server.sh /var/www
+#COPY .docker/app/ /var/www
+#COPY server.sh /var/www
 RUN ln -s public html
 
 #WORKDIR /usr/local/etc/php/conf.d
